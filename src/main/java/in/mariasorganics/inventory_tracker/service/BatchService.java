@@ -6,8 +6,11 @@ import in.mariasorganics.inventory_tracker.model.StockTransaction;
 import in.mariasorganics.inventory_tracker.repository.BatchRepository;
 import in.mariasorganics.inventory_tracker.repository.StockRepository;
 import in.mariasorganics.inventory_tracker.repository.StockTransactionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +41,14 @@ public class BatchService {
 
     public List<Batch> getActiveBatches() {
         return batchRepository.findByStatusOrderByInoculationDateDesc(Batch.BatchStatus.ACTIVE);
+    }
+
+    public Page<Batch> getActiveBatchesPaginated(int page, int size) {
+        return batchRepository.findByStatusOrderByInoculationDateDesc(Batch.BatchStatus.ACTIVE, PageRequest.of(page, size));
+    }
+
+    public Page<Batch> getCompletedBatchesPaginated(int page, int size) {
+        return batchRepository.findByStatusOrderByCompletedAtDesc(Batch.BatchStatus.COMPLETED, PageRequest.of(page, size));
     }
 
     @Transactional
@@ -73,6 +84,132 @@ public class BatchService {
         return batchRepository.save(batch);
     }
 
+    @Transactional
+    public void checkoutBags(int totalToCheckout) {
+        Long activeBags = batchRepository.countActiveBags();
+        if (activeBags == null) activeBags = 0L;
+        
+        if (totalToCheckout > activeBags) {
+            throw new IllegalStateException("Cannot checkout " + totalToCheckout + " bags. Only " + activeBags + " active bags in room.");
+        }
+
+        List<Batch> activeBatches = batchRepository.findByStatusOrderByInoculationDateAsc(Batch.BatchStatus.ACTIVE);
+        int remaining = totalToCheckout;
+
+        for (Batch batch : activeBatches) {
+            if (remaining <= 0) break;
+
+            if (batch.getBagCount() <= remaining) {
+                // Full batch checkout
+                int count = batch.getBagCount();
+                batch.setStatus(Batch.BatchStatus.COMPLETED);
+                batch.setCompletedAt(LocalDateTime.now());
+                batchRepository.save(batch);
+                remaining -= count;
+            } else {
+                // Partial batch checkout: Split it
+                int count = remaining;
+                
+                // Create a completed record for the bags moved out
+                Batch completedPortion = new Batch(
+                    batch.getBatchId() + "-OUT-" + System.currentTimeMillis() % 1000, 
+                    batch.getInoculationDate(), 
+                    count, 
+                    batch.getTargetExitDate()
+                );
+                completedPortion.setStatus(Batch.BatchStatus.COMPLETED);
+                completedPortion.setCompletedAt(LocalDateTime.now());
+                batchRepository.save(completedPortion);
+
+                // Update original batch with remaining bags
+                batch.setBagCount(batch.getBagCount() - count);
+                batchRepository.save(batch);
+                
+                remaining = 0;
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteBatch(Long id) {
+        Batch batch = batchRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Batch not found: " + id));
+        
+        if (batch.getStatus() == Batch.BatchStatus.COMPLETED) {
+            throw new IllegalStateException("Completed batches cannot be deleted for historical integrity. Use 'Undo' to move back to active room if needed.");
+        }
+
+        if (batch.getStatus() == Batch.BatchStatus.ACTIVE) {
+            Map<String, Double> configs = configService.getConfigMap();
+            double pelletPerBag = configs.getOrDefault("PELLET_KG_PER_BAG", 1.0);
+            double spawnUsagePerBag = configs.getOrDefault("SPAWN_USAGE_PER_BAG_G", 150.0);
+            
+            addStockBack("PELLETS", batch.getBagCount() * pelletPerBag, "Batch Deletion: " + batch.getBatchId());
+            addStockBack("SPAWN", batch.getBagCount() * spawnUsagePerBag, "Batch Deletion: " + batch.getBatchId());
+        }
+        
+        batchRepository.delete(batch);
+    }
+
+    @Transactional
+    public void updateBatchCount(Long id, int newCount) {
+        Batch batch = batchRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Batch not found: " + id));
+        
+        if (batch.getStatus() != Batch.BatchStatus.ACTIVE) {
+            throw new IllegalStateException("Only ACTIVE batches can have their count adjusted.");
+        }
+
+        int diff = newCount - batch.getBagCount();
+        if (diff == 0) return;
+
+        Map<String, Double> configs = configService.getConfigMap();
+        double pelletPerBag = configs.getOrDefault("PELLET_KG_PER_BAG", 1.0);
+        double spawnUsagePerBag = configs.getOrDefault("SPAWN_USAGE_PER_BAG_G", 150.0);
+
+        if (diff > 0) {
+            // Adding bags
+            double capacity = configs.getOrDefault("DARK_ROOM_CAPACITY", 900.0);
+            Long activeBags = batchRepository.countActiveBags();
+            if (activeBags + diff > capacity) {
+                throw new IllegalStateException("Capacity exceeded. Remaining: " + (capacity - activeBags));
+            }
+            deductStock("PELLETS", diff * pelletPerBag, "Batch Adjustment (+): " + batch.getBatchId());
+            deductStock("SPAWN", diff * spawnUsagePerBag, "Batch Adjustment (+): " + batch.getBatchId());
+        } else {
+            // Removing bags
+            int toRemove = Math.abs(diff);
+            addStockBack("PELLETS", toRemove * pelletPerBag, "Batch Adjustment (-): " + batch.getBatchId());
+            addStockBack("SPAWN", toRemove * spawnUsagePerBag, "Batch Adjustment (-): " + batch.getBatchId());
+        }
+
+        batch.setBagCount(newCount);
+        batchRepository.save(batch);
+    }
+
+    @Transactional
+    public void revertToActive(Long id) {
+        Batch batch = batchRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Batch not found: " + id));
+        
+        if (batch.getStatus() != Batch.BatchStatus.COMPLETED) {
+            throw new IllegalStateException("Only COMPLETED batches can be reverted.");
+        }
+
+        Map<String, Double> configs = configService.getConfigMap();
+        double capacity = configs.getOrDefault("DARK_ROOM_CAPACITY", 900.0);
+        Long activeBags = batchRepository.countActiveBags();
+        if (activeBags == null) activeBags = 0L;
+
+        if (activeBags + batch.getBagCount() > capacity) {
+            throw new IllegalStateException("Cannot revert. Room capacity reached.");
+        }
+
+        batch.setStatus(Batch.BatchStatus.ACTIVE);
+        batch.setCompletedAt(null);
+        batchRepository.save(batch);
+    }
+
     private void deductStock(String itemName, Double quantity, String reason) {
         Stock stock = stockRepository.findByItemName(itemName.toUpperCase())
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found in inventory: " + itemName));
@@ -86,6 +223,17 @@ public class BatchService {
 
         transactionRepository.save(new StockTransaction(itemName.toUpperCase(), quantity, 
                 StockTransaction.TransactionType.CONSUMPTION, reason));
+    }
+
+    private void addStockBack(String itemName, Double quantity, String reason) {
+        Stock stock = stockRepository.findByItemName(itemName.toUpperCase())
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found in inventory: " + itemName));
+        
+        stock.addPhysical(quantity);
+        stockRepository.save(stock);
+
+        transactionRepository.save(new StockTransaction(itemName.toUpperCase(), quantity, 
+                StockTransaction.TransactionType.ADJUSTMENT, reason + " (Correction)"));
     }
 
     private String generateBatchId(LocalDate date) {

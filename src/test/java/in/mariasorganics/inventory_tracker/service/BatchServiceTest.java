@@ -95,4 +95,90 @@ class BatchServiceTest {
         
         assertTrue(exception.getMessage().contains("Insufficient stock for PELLETS"));
     }
+
+    @Test
+    void checkoutBags_ShouldHandleFIFOCorrectly() {
+        Batch b1 = new Batch("B1", LocalDate.now().minusDays(2), 10, LocalDate.now());
+        Batch b2 = new Batch("B2", LocalDate.now().minusDays(1), 10, LocalDate.now());
+        
+        when(batchRepository.countActiveBags()).thenReturn(20L);
+        when(batchRepository.findByStatusOrderByInoculationDateAsc(Batch.BatchStatus.ACTIVE))
+                .thenReturn(java.util.List.of(b1, b2));
+
+        // Checkout 15 bags
+        batchService.checkoutBags(15);
+
+        // B1 should be COMPLETED (10 bags)
+        assertEquals(Batch.BatchStatus.COMPLETED, b1.getStatus());
+        
+        // B2 should have been split. The original B2 remains ACTIVE but with 5 bags.
+        // Wait, my logic: 
+        // B1 (10) <= 15 -> B1 COMPLETED, remaining = 5
+        // B2 (10) > 5 -> Split B2: 
+        //   - New completed record for 5 bags
+        //   - B2 original becomes ACTIVE (10 - 5 = 5)
+        
+        assertEquals(Batch.BatchStatus.ACTIVE, b2.getStatus());
+        assertEquals(5, b2.getBagCount());
+        
+        verify(batchRepository, times(3)).save(any(Batch.class)); // B1, NewSplit, B2
+    }
+
+    @Test
+    void checkoutBags_ShouldFail_WhenOverCheckout() {
+        when(batchRepository.countActiveBags()).thenReturn(10L);
+        
+        IllegalStateException exception = assertThrows(IllegalStateException.class, 
+            () -> batchService.checkoutBags(15));
+        
+        assertTrue(exception.getMessage().contains("Only 10 active bags"));
+    }
+
+    @Test
+    void deleteActiveBatch_ShouldRevertStock() {
+        Batch b = new Batch("B1", LocalDate.now(), 10, LocalDate.now());
+        b.setId(1L);
+        Stock pellets = new Stock("PELLETS", "KG");
+        pellets.setPhysicalQuantity(50.0);
+        
+        when(batchRepository.findById(1L)).thenReturn(Optional.of(b));
+        when(stockRepository.findByItemName("PELLETS")).thenReturn(Optional.of(pellets));
+        when(stockRepository.findByItemName("SPAWN")).thenReturn(Optional.of(new Stock("SPAWN", "G")));
+
+        batchService.deleteBatch(1L);
+
+        assertEquals(60.0, pellets.getPhysicalQuantity()); // 50 + 10
+        verify(batchRepository).delete(b);
+        verify(transactionRepository, times(2)).save(any());
+    }
+
+    @Test
+    void updateBatchCount_ShouldIncreaseDeduction_WhenDiffPositive() {
+        Batch b = new Batch("B1", LocalDate.now(), 10, LocalDate.now());
+        b.setId(1L);
+        Stock pellets = new Stock("PELLETS", "KG");
+        pellets.setPhysicalQuantity(50.0);
+        
+        when(batchRepository.findById(1L)).thenReturn(Optional.of(b));
+        when(batchRepository.countActiveBags()).thenReturn(100L);
+        when(stockRepository.findByItemName("PELLETS")).thenReturn(Optional.of(pellets));
+        when(stockRepository.findByItemName("SPAWN")).thenReturn(Optional.of(new Stock("SPAWN", "G")));
+
+        batchService.updateBatchCount(1L, 15); // +5 bags
+
+        assertEquals(45.0, pellets.getPhysicalQuantity()); // 50 - 5
+        assertEquals(15, b.getBagCount());
+    }
+
+    @Test
+    void revertToActive_ShouldFail_WhenCapacityFull() {
+        Batch b = new Batch("B1", LocalDate.now(), 20, LocalDate.now());
+        b.setStatus(Batch.BatchStatus.COMPLETED);
+        b.setId(1L);
+
+        when(batchRepository.findById(1L)).thenReturn(Optional.of(b));
+        when(batchRepository.countActiveBags()).thenReturn(890L); // Capacity 900, adding 20 fails
+
+        assertThrows(IllegalStateException.class, () -> batchService.revertToActive(1L));
+    }
 }
