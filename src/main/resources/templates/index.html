@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}">
+    <title>Dashboard | Inventory Tracker</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <!-- Main Content -->
+    <main class="container flex-grow-1">
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-8">
+
+                <!-- Welcome Card -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-box-seam display-1 text-primary mb-3"></i>
+                        <h1 class="card-title h3">Welcome to Inventory Tracker</h1>
+                        <p class="card-text text-muted">
+                            Maria's Organics inventory management system.
+                            Start by adding products and tracking your stock.
+                        </p>
+                        <a th:href="@{/}" class="btn btn-primary mt-2">
+                            <i class="bi bi-plus-circle me-1"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Row (placeholder for future) -->
+                <div class="row mt-4 g-3">
+                    <div class="col-md-4">
+                        <div class="card text-bg-primary shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-archive display-6"></i>
+                                <h5 class="mt-2">Products</h5>
+                                <p class="display-6 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-bg-success shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-check-circle display-6"></i>
+                                <h5 class="mt-2">In Stock</h5>
+                                <p class="display-6 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-bg-warning shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-exclamation-triangle display-6"></i>
+                                <h5 class="mt-2">Low Stock</h5>
+                                <p class="display-6 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

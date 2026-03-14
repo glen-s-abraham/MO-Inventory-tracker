@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Global Configuration')}">
+    <title>Settings | Inventory Tracker</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <!-- Main Content -->
+    <main class="container flex-grow-1">
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-8">
+                
+                <div class="d-flex align-items-center mb-4">
+                    <i class="bi bi-gear-fill fs-2 text-primary me-3"></i>
+                    <h1 class="h3 mb-0">Global Configuration</h1>
+                </div>
+
+                <!-- Alert Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span th:text="${warning}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="card-title mb-0 text-muted">Operational Parameters</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/settings/update}" method="post">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label for="PELLET_KG_PER_BAG" class="form-label fw-bold">Pellet (kg) per Bag</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" class="form-control" id="PELLET_KG_PER_BAG" name="PELLET_KG_PER_BAG" 
+                                               th:value="${configs['PELLET_KG_PER_BAG']}" required>
+                                        <span class="input-group-text">kg</span>
+                                    </div>
+                                    <div class="form-text">Default: 1.0 kg</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="SPAWN_G_PER_BAG" class="form-label fw-bold">Spawn (g) per Bag</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="SPAWN_G_PER_BAG" name="SPAWN_G_PER_BAG" 
+                                               th:value="${configs['SPAWN_G_PER_BAG']}" required>
+                                        <span class="input-group-text">g</span>
+                                    </div>
+                                    <div class="form-text">Default: 150.0 g</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="DARK_ROOM_CAPACITY" class="form-label fw-bold">Dark Room Capacity</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="DARK_ROOM_CAPACITY" name="DARK_ROOM_CAPACITY" 
+                                               th:value="${configs['DARK_ROOM_CAPACITY']}" required>
+                                        <span class="input-group-text">bags</span>
+                                    </div>
+                                    <div class="form-text">Maximum bag storage capacity.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="INOCULATION_PERIOD_DAYS" class="form-label fw-bold">Inoculation Period (Days)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="INOCULATION_PERIOD_DAYS" name="INOCULATION_PERIOD_DAYS" 
+                                               th:value="${configs['INOCULATION_PERIOD_DAYS']}" required>
+                                        <span class="input-group-text">days</span>
+                                    </div>
+                                    <div class="form-text">Days required for inoculation.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="SUPPLIER_LEAD_TIME_DAYS" class="form-label fw-bold">Supplier Lead Time (Days)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="SUPPLIER_LEAD_TIME_DAYS" name="SUPPLIER_LEAD_TIME_DAYS" 
+                                               th:value="${configs['SUPPLIER_LEAD_TIME_DAYS']}" required>
+                                        <span class="input-group-text">days</span>
+                                    </div>
+                                    <div class="form-text">Days for order fulfillment.</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-3 border-top d-flex justify-content-end">
+                                <button type="reset" class="btn btn-outline-secondary me-2">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Note about History -->
+                <div class="mt-4 p-3 bg-light rounded text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    All changes to these parameters are logged with historical values to ensure data integrity for batch calculations.
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
