@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Order Projection')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold text-primary"><i class="bi bi-graph-up-arrow me-3"></i>Order Projection Engine</h1>
+            <p class="lead text-muted">Simulate space and stock requirements for your next order.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Simulation Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h5 class="card-title mb-0">Simulation Inputs</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/projection/simulate}" method="post">
+                        <div class="mb-3">
+                            <label for="orderDate" class="form-label fw-semibold">Planned Order Date</label>
+                            <input type="date" class="form-control form-control-lg shadow-sm" id="orderDate" name="orderDate" 
+                                   th:value="${orderDate}" required>
+                            <div class="form-text">When do you intend to place the order?</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="plannedBags" class="form-label fw-semibold text-primary">New Bags Before Arrival (Suggested)</label>
+                            <input type="number" class="form-control form-control-lg shadow-sm border-primary" id="plannedBags" name="plannedBags" 
+                                   th:value="${plannedBags}" min="0">
+                            <div class="form-text">Auto-calculated based on your current stock and room exits.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="projectionDays" class="form-label fw-semibold">Projection Window (Days)</label>
+                            <input type="number" class="form-control form-control-lg shadow-sm" id="projectionDays" name="projectionDays" 
+                                   th:value="${projectionDays}" min="1" max="60">
+                            <div class="form-text">How many working days of production should this order cover?</div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg shadow">
+                                <i class="bi bi-play-fill me-2"></i>Run Simulation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Results -->
+        <div class="col-lg-8 mb-4">
+            <div th:if="${simulated}" class="animate-fade-in">
+                <div class="row g-4">
+                    <!-- Vacancy Card -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-0 bg-info bg-opacity-10">
+                            <div class="card-body p-4">
+                                <h6 class="text-info text-uppercase fw-bold mb-3 small">Dark Room Projection</h6>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="display-4 fw-bold text-info me-3" th:text="${#numbers.formatDecimal(projectedVacancy, 1, 2)}">0.00</div>
+                                    <div class="text-muted lh-sm">
+                                        Projected<br>Empty Slots
+                                    </div>
+                                </div>
+                                <div class="small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Arrival Date:</span>
+                                        <span class="fw-bold" th:text="${#temporals.format(arrivalDate, 'dd MMM yyyy')}">Date</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Current Occupancy:</span>
+                                        <span th:text="${#numbers.formatDecimal(currentActiveBags, 1, 2)}">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1 text-danger">
+                                        <span>Upcoming Exits:</span>
+                                        <span class="fw-bold" th:text="${'+ ' + #numbers.formatDecimal(bagsExiting, 1, 2)}">+0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1 text-primary">
+                                        <span>Exits in Window:</span>
+                                        <span class="fw-bold" th:text="${'+ ' + #numbers.formatDecimal(exitsInWindow, 1, 2)}">+0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-top pt-1 mt-1 fw-bold">
+                                        <span>Total Room Capacity:</span>
+                                        <span th:text="${#numbers.formatDecimal(totalThroughput, 1, 2)}">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Recommendations -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-0 border-start border-4 border-warning">
+                            <div class="card-body p-4">
+                                <h6 class="text-warning text-uppercase fw-bold mb-3 small">Recommended Order</h6>
+                                
+                                <div class="mb-4">
+                                    <label class="d-block text-muted small mb-1">PELLETS</label>
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="h2 fw-bold mb-0" th:text="${#numbers.formatDecimal(pelletsToOrder, 1, 2)}">0.00</span>
+                                        <span class="ms-1 text-muted fw-semibold" th:text="${pelletUnit}">KG</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="d-block text-muted small mb-1">SPAWN</label>
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="h2 fw-bold mb-0" th:text="${#numbers.formatDecimal(spawnToOrder, 1, 2)}">0.00</span>
+                                        <span class="ms-1 text-muted fw-semibold" th:text="${spawnUnit}">G</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-light rounded-3 small text-muted">
+                                    <i class="bi bi-shield-check me-2 text-primary"></i>
+                                    <strong>Space-Aware Logic:</strong> Recommendation is capped by your room's physical capacity and projected batch exits.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pre-simulation State -->
+            <div th:unless="${simulated}" class="card shadow-sm border-0 border-dashed bg-light py-5">
+                <div class="card-body text-center">
+                    <i class="bi bi-cpu display-1 text-muted mb-4 opacity-25"></i>
+                    <h4>Ready to Calculate</h4>
+                    <p class="text-muted mx-auto" style="max-width: 300px;">
+                        Enter your order date and planned production to see the inventory projection.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+<style>
+    .border-dashed { border-style: dashed !important; border-width: 2px !important; }
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+</body>
+</html>

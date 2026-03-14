@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "batch")
+@Table(name = "it_batch")
 public class Batch {
 
     public enum BatchStatus {

@@ -29,31 +29,31 @@
                      th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'border-start border-danger border-5' : ''">
                     <div class="card-body">
                         <h5 class="card-title text-uppercase fw-bold text-muted" th:text="${stock.itemName}">ITEM NAME</h5>
-                        <div class="row mt-3">
-                            <div class="col-6 text-center border-end">
-                                <h3 class="mb-0 fw-bold" th:text="${#numbers.formatDecimal(stock.physicalQuantity, 1, 1)}">0.0</h3>
-                                <small class="text-muted">Physical (<span th:text="${stock.unitOfMeasure}"></span>)</small>
+                            <div class="row mt-3">
+                                <div class="col-6 text-center border-end">
+                                    <h3 class="mb-0 fw-bold" th:text="${#numbers.formatDecimal(stock.physicalQuantity, 1, 2)}">0.00</h3>
+                                    <small class="text-muted">Physical (<span th:text="${stock.unitOfMeasure}"></span>)</small>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <h3 class="mb-0 fw-bold text-info" th:text="${#numbers.formatDecimal(stock.reservedQuantity, 1, 2)}">0.00</h3>
+                                    <small class="text-muted">Reserved (<span th:text="${stock.unitOfMeasure}"></span>)</small>
+                                </div>
                             </div>
-                            <div class="col-6 text-center">
-                                <h3 class="mb-0 fw-bold text-info" th:text="${#numbers.formatDecimal(stock.reservedQuantity, 1, 1)}">0.0</h3>
-                                <small class="text-muted">Reserved (<span th:text="${stock.unitOfMeasure}"></span>)</small>
+                            
+                            <div class="mt-4 p-3 rounded" 
+                                 th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'bg-danger-subtle' : 'bg-light'">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Available Stock:</span>
+                                    <span class="fw-bold" 
+                                          th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'text-danger' : 'text-success'"
+                                          th:text="${#numbers.formatDecimal(stock.getAvailableQuantity(), 1, 2)} + ' ' + ${stock.unitOfMeasure}">
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <small>5-Day Req:</small>
+                                    <small class="fw-bold" th:text="${#numbers.formatDecimal(requirements.get(stock.itemName), 1, 2)} + ' ' + ${stock.unitOfMeasure}"></small>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="mt-4 p-3 rounded" 
-                             th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'bg-danger-subtle' : 'bg-light'">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Available Stock:</span>
-                                <span class="fw-bold" 
-                                      th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'text-danger' : 'text-success'"
-                                      th:text="${#numbers.formatDecimal(stock.getAvailableQuantity(), 1, 1)} + ' ' + ${stock.unitOfMeasure}">
-                                </span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-1">
-                                <small>5-Day Req:</small>
-                                <small class="fw-bold" th:text="${#numbers.formatDecimal(requirements.get(stock.itemName), 1, 1)} + ' ' + ${stock.unitOfMeasure}"></small>
-                            </div>
-                        </div>
                         
                         <div th:if="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)}" class="mt-2">
                             <span class="badge bg-danger">
@@ -63,9 +63,167 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Empty State -->
-            <div th:if="${#lists.isEmpty(stocks)}" class="col-12 text-center py-5">
+        </div>
+
+        <!-- Room Status Widget -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card shadow-sm border-0 bg-white">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-muted text-uppercase fw-bold small">Dark Room Status</h5>
+                            <span class="badge bg-primary px-3 rounded-pill" th:text="${projections.activeBags} + ' / ' + ${projections.capacity} + ' Bags'">0 / 900 Bags</span>
+                        </div>
+                        
+                        <div class="progress mb-4" style="height: 12px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
+                                 th:style="'width: ' + ${projections.occupancyPercentage} + '%'"
+                                 th:classappend="${projections.occupancyPercentage > 90} ? 'bg-danger' : (${projections.occupancyPercentage > 75} ? 'bg-warning' : 'bg-success')">
+                            </div>
+                        </div>
+
+                        <div class="row g-4 text-center">
+                            <div class="col-md-4 border-end">
+                                <div class="h3 fw-bold mb-0 text-success" th:text="${projections.freeSlotsNow}">0</div>
+                                <div class="text-muted small fw-semibold">Free Slots Now</div>
+                            </div>
+                            <div class="col-md-4 border-end">
+                                <div class="h3 fw-bold mb-0 text-info" th:text="'+' + ${projections.exits7Days}">+0</div>
+                                <div class="text-muted small fw-semibold">Exits (Next 7 Days)</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="h3 fw-bold mb-0 text-primary" th:text="${#numbers.formatDecimal(projections.occupancyPercentage, 1, 2)} + '%'">0.00%</div>
+                                <div class="text-muted small fw-semibold">Current Occupancy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-12">
+                <hr class="my-4 opacity-25">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0"><i class="bi bi-lightbulb me-2 text-warning"></i>Projections & Insights</h3>
+                    <ul class="nav nav-pills" id="projectionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="standard-tab" data-bs-toggle="pill" data-bs-target="#standard" type="button" role="tab" aria-controls="standard" aria-selected="true">
+                                <i class="bi bi-bullseye me-1"></i>Standard Target
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="optimized-tab" data-bs-toggle="pill" data-bs-target="#optimized" type="button" role="tab" aria-controls="optimized" aria-selected="false">
+                                <i class="bi bi-magic me-1"></i>Optimized Rate
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${projections.spacePauseDetected}" class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4">
+            <i class="bi bi-exclamation-octagon-fill fs-4 me-3 text-warning"></i>
+            <div>
+                <strong class="d-block">Capacity Bottleneck Detected!</strong>
+                <span class="small text-muted">The simulation predicts production will be <strong>paused</strong> on some days because the Dark Room will hit its limit. Your runway is actually extended because you'll consume materials slower.</span>
+            </div>
+        </div>
+
+        <div class="tab-content" id="projectionTabsContent">
+            <!-- Standard Scenario Tab -->
+            <div class="tab-pane fade show active" id="standard" role="tabpanel" aria-labelledby="standard-tab">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4" th:classappend="${projections.isCritical} ? 'border-danger' : 'border-success'">
+                            <div class="card-body p-4">
+                                <h6 class="card-subtitle text-muted text-uppercase fw-bold small mb-3">Inventory Runway</h6>
+                                <div class="d-flex align-items-baseline">
+                                    <span class="h2 fw-bold mb-0" th:text="${#numbers.formatDecimal(projections.standard.runwayDays, 1, 2)}">0.00</span>
+                                    <span class="ms-2 text-muted fw-semibold">Days</span>
+                                </div>
+                                <p class="card-text text-muted small mt-3">
+                                    Assuming you produce at your fixed target of <span class="fw-bold" th:text="${#numbers.formatDecimal(projections.standard.rate, 1, 2)}">0.00</span> bags/day.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4 border-info">
+                            <div class="card-body p-4">
+                                <h6 class="card-subtitle text-muted text-uppercase fw-bold small mb-3">Next Order Deadline</h6>
+                                <div class="h3 fw-bold mb-0" th:text="${#temporals.format(projections.standard.nextOrderDate, 'dd MMM yyyy')}">Date</div>
+                                <p class="card-text text-muted small mt-3">
+                                    Latest date to reorder to sustain current target.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4 border-warning">
+                            <div class="card-body p-4">
+                                <h6 class="card-subtitle text-muted text-uppercase fw-bold small mb-3">Optimal Recommendation</h6>
+                                <div class="d-flex align-items-baseline">
+                                    <span class="h2 fw-bold mb-0 text-warning" th:text="${#numbers.formatDecimal(projections.optimalRate, 1, 2)}">0.00</span>
+                                    <span class="ms-2 text-muted fw-semibold">Bags / Day</span>
+                                </div>
+                                <p class="card-text text-muted small mt-3">
+                                    Switch to "Optimized" tab to see how this extends your runway.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optimized Scenario Tab -->
+            <div class="tab-pane fade" id="optimized" role="tabpanel" aria-labelledby="optimized-tab">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4 border-success">
+                            <div class="card-body p-4">
+                                <h6 class="card-subtitle text-muted text-uppercase fw-bold small mb-3">Extended Runway</h6>
+                                <div class="d-flex align-items-baseline">
+                                    <span class="h2 fw-bold mb-0 text-success" th:text="${#numbers.formatDecimal(projections.optimized.runwayDays, 1, 2)}">0.00</span>
+                                    <span class="ms-2 text-muted fw-semibold">Days</span>
+                                </div>
+                                <p class="card-text text-muted small mt-3">
+                                    If you switch to the optimized rate of <span class="fw-bold" th:text="${#numbers.formatDecimal(projections.optimized.rate, 1, 2)}">0.00</span> bags/day.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4 border-primary">
+                            <div class="card-body p-4">
+                                <h6 class="card-subtitle text-muted text-uppercase fw-bold small mb-3">Pushed Order Date</h6>
+                                <div class="h3 fw-bold mb-0" th:text="${#temporals.format(projections.optimized.nextOrderDate, 'dd MMM yyyy')}">Date</div>
+                                <p class="card-text text-muted small mt-3">
+                                    By optimizing production, you gain extra days before needing to reorder.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4 border-info">
+                            <div class="card-body p-4">
+                                <h6 class="card-subtitle text-muted text-uppercase fw-bold small mb-3">Efficiency Gain</h6>
+                                <div class="d-flex align-items-baseline">
+                                    <span class="h2 fw-bold mb-0 text-info" th:text="${#numbers.formatDecimal(projections.optimized.runwayDays - projections.standard.runwayDays, 1, 2)}">0.00</span>
+                                    <span class="ms-2 text-muted fw-semibold">Extra Days</span>
+                                </div>
+                                <p class="card-text text-muted small mt-3">
+                                    Following the recommendation extends your runway by balancing stock and space.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(stocks)}" class="col-12 text-center py-5">
                 <i class="bi bi-inbox text-muted display-1"></i>
                 <p class="mt-3 text-muted">No stock data available. Start by logging a receipt.</p>
             </div>

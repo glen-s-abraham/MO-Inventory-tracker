@@ -20,6 +20,7 @@ public class InventoryController {
     public String dashboard(Model model) {
         model.addAttribute("stocks", inventoryService.getAllStock());
         model.addAttribute("requirements", inventoryService.getStockRequirements());
+        model.addAttribute("projections", inventoryService.getDashboardProjections());
         model.addAttribute("pageTitle", "Inventory Dashboard");
         model.addAttribute("activePage", "inventory");
         return "inventory/dashboard";

@@ -69,7 +69,7 @@
                                                th:value="${configs['DAILY_PRODUCTION_TARGET']}" required>
                                         <span class="input-group-text">bags/day</span>
                                     </div>
-                                    <div class="form-text">Planned daily output. Default: 18.0</div>
+                                    <div class="form-text">Planned daily output. Default: 5.0</div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -89,7 +89,7 @@
                                                th:value="${configs['DARK_ROOM_CAPACITY']}" required>
                                         <span class="input-group-text">bags</span>
                                     </div>
-                                    <div class="form-text">Maximum bag storage capacity. Default: 900.0</div>
+                                    <div class="form-text">Maximum bag storage capacity. Default: 90.0</div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -110,6 +110,16 @@
                                         <span class="input-group-text">days</span>
                                     </div>
                                     <div class="form-text">Days for order fulfillment.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="INOCULATIONS_PER_WEEK" class="form-label fw-bold">Inoculations per Week</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="INOCULATIONS_PER_WEEK" name="INOCULATIONS_PER_WEEK" 
+                                               th:value="${configs['INOCULATIONS_PER_WEEK']}" required>
+                                        <span class="input-group-text">sessions/week</span>
+                                    </div>
+                                    <div class="form-text">Number of inoculation sessions performed per week. Default: 1.0</div>
                                 </div>
                             </div>
 

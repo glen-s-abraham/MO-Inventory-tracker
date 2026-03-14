@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "stock_transaction")
+@Table(name = "it_stock_transaction")
 public class StockTransaction {
 
     public enum TransactionType {

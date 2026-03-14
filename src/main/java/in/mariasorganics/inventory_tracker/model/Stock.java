@@ -3,7 +3,7 @@ package in.mariasorganics.inventory_tracker.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "stock")
+@Table(name = "it_stock")
 public class Stock {
 
     @Id

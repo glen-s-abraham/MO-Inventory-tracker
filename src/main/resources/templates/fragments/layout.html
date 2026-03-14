@@ -33,11 +33,7 @@
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activePage == 'dashboard' ? 'active' : ''}" aria-current="page" th:href="@{/}">
-                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
-                    </a>
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activePage == 'inventory' ? 'active' : ''}" th:href="@{/inventory}">
                         <i class="bi bi-warehouse me-1"></i>Inventory
@@ -46,6 +42,11 @@
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activePage == 'production' ? 'active' : ''}" th:href="@{/production}">
                         <i class="bi bi-factory me-1"></i>Production
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activePage == 'projection' ? 'active' : ''}" th:href="@{/projection/simulation}">
+                        <i class="bi bi-graph-up-arrow me-1"></i>Projection
                     </a>
                 </li>
                 <li class="nav-item">

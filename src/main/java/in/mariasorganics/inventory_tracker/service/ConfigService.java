@@ -77,11 +77,14 @@ public class ConfigService {
         Map<String, Double> defaults = Map.of(
             "PELLET_KG_PER_BAG", 1.0,
             "SPAWN_USAGE_PER_BAG_G", 150.0,
-            "DARK_ROOM_CAPACITY", 900.0,
-            "DAILY_PRODUCTION_TARGET", 18.0,
+            "DARK_ROOM_CAPACITY", 90.0,
+            "DAILY_PRODUCTION_TARGET", 5.0,
             "LOW_STOCK_THRESHOLD_DAYS", 5.0,
             "INOCULATION_PERIOD_DAYS", 18.0,
-            "SUPPLIER_LEAD_TIME_DAYS", 15.0
+            "SUPPLIER_LEAD_TIME_DAYS", 15.0,
+            "MONTHLY_WORKING_DAYS", 25.0,
+            "INOCULATION_DAYS_PER_MONTH", 5.0,
+            "INOCULATIONS_PER_WEEK", 1.0
         );
 
         defaults.forEach((key, value) -> {

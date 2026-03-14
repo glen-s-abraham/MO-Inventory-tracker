@@ -1,0 +1,146 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.0)
+
+2026-03-14T19:53:40.621+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] i.m.i.InventoryTrackerApplication        : Starting InventoryTrackerApplication using Java 21.0.10 with PID 59202 (/home/glen-personal/projects/Mo-Inventory-Tracker/target/classes started by glen-personal in /home/glen-personal/projects/Mo-Inventory-Tracker)
+2026-03-14T19:53:40.623+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] i.m.i.InventoryTrackerApplication        : The following 1 profile is active: "dev"
+2026-03-14T19:53:40.680+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-03-14T19:53:40.680+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-03-14T19:53:41.504+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-14T19:53:41.588+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 74 ms. Found 5 JPA repository interfaces.
+2026-03-14T19:53:42.286+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-03-14T19:53:42.308+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-14T19:53:42.308+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-03-14T19:53:42.362+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-03-14T19:53:42.364+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1681 ms
+2026-03-14T19:53:42.623+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-14T19:53:42.751+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2026-03-14T19:53:42.826+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-03-14T19:53:43.150+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-14T19:53:43.222+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-14T19:53:43.473+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:inventory_tracker_dev user=SA
+2026-03-14T19:53:43.476+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-14T19:53:43.527+05:30  WARN 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-14T19:53:43.564+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-14T19:53:45.005+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-14T19:53:45.033+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : drop table if exists it_app_config cascade 
+Hibernate: drop table if exists it_app_config cascade 
+2026-03-14T19:53:45.039+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : drop table if exists it_app_config_history cascade 
+Hibernate: drop table if exists it_app_config_history cascade 
+2026-03-14T19:53:45.040+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : drop table if exists it_batch cascade 
+Hibernate: drop table if exists it_batch cascade 
+2026-03-14T19:53:45.041+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : drop table if exists it_stock cascade 
+Hibernate: drop table if exists it_stock cascade 
+2026-03-14T19:53:45.041+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : drop table if exists it_stock_transaction cascade 
+Hibernate: drop table if exists it_stock_transaction cascade 
+2026-03-14T19:53:45.049+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : create table it_app_config (config_value float(53) not null, id bigint generated by default as identity, last_updated timestamp(6), config_key varchar(255) not null unique, primary key (id))
+Hibernate: create table it_app_config (config_value float(53) not null, id bigint generated by default as identity, last_updated timestamp(6), config_key varchar(255) not null unique, primary key (id))
+2026-03-14T19:53:45.068+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : create table it_app_config_history (new_value float(53) not null, old_value float(53), change_timestamp timestamp(6), id bigint generated by default as identity, config_key varchar(255) not null, primary key (id))
+Hibernate: create table it_app_config_history (new_value float(53) not null, old_value float(53), change_timestamp timestamp(6), id bigint generated by default as identity, config_key varchar(255) not null, primary key (id))
+2026-03-14T19:53:45.075+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : create table it_batch (bag_count integer not null, inoculation_date date not null, target_exit_date date not null, completed_at timestamp(6), created_at timestamp(6) not null, id bigint generated by default as identity, batch_id varchar(255) not null unique, status enum ('ACTIVE','COMPLETED') not null, primary key (id))
+Hibernate: create table it_batch (bag_count integer not null, inoculation_date date not null, target_exit_date date not null, completed_at timestamp(6), created_at timestamp(6) not null, id bigint generated by default as identity, batch_id varchar(255) not null unique, status enum ('ACTIVE','COMPLETED') not null, primary key (id))
+2026-03-14T19:53:45.081+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : create table it_stock (physical_quantity float(53) not null, reserved_quantity float(53) not null, id bigint generated by default as identity, item_name varchar(255) not null unique, unit_of_measure varchar(255) not null, primary key (id))
+Hibernate: create table it_stock (physical_quantity float(53) not null, reserved_quantity float(53) not null, id bigint generated by default as identity, item_name varchar(255) not null unique, unit_of_measure varchar(255) not null, primary key (id))
+2026-03-14T19:53:45.087+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : create table it_stock_transaction (quantity float(53) not null, id bigint generated by default as identity, timestamp timestamp(6) not null, item_name varchar(255) not null, reason varchar(255), transaction_type enum ('ADJUSTMENT','CONSUMPTION','RECEIPT','RESERVATION') not null, primary key (id))
+Hibernate: create table it_stock_transaction (quantity float(53) not null, id bigint generated by default as identity, timestamp timestamp(6) not null, item_name varchar(255) not null, reason varchar(255), transaction_type enum ('ADJUSTMENT','CONSUMPTION','RECEIPT','RESERVATION') not null, primary key (id))
+2026-03-14T19:53:45.096+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-14T19:53:45.605+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-14T19:53:47.155+05:30  WARN 59202 --- [inventory_tracker] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-14T19:53:47.196+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2026-03-14T19:53:47.797+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:inventory_tracker_dev'
+2026-03-14T19:53:47.936+05:30  WARN 59202 --- [inventory_tracker] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2026-03-14T19:53:47.997+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2026-03-14T19:53:48.015+05:30  INFO 59202 --- [inventory_tracker] [  restartedMain] i.m.i.InventoryTrackerApplication        : Started InventoryTrackerApplication in 8.196 seconds (process running for 8.787)
+2026-03-14T19:53:48.142+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.233+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.268+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.293+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.303+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.305+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.307+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.308+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.312+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.316+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.317+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.319+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.322+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.326+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.328+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.332+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.335+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.338+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.341+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.344+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.348+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.352+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.353+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.359+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.364+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.368+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.370+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.371+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.376+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.386+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.393+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.397+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.410+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.419+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.421+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.425+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+2026-03-14T19:53:48.431+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.434+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+Hibernate: select ac1_0.id,ac1_0.config_key,ac1_0.config_value,ac1_0.last_updated from it_app_config ac1_0 where ac1_0.config_key=?
+2026-03-14T19:53:48.436+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+Hibernate: insert into it_app_config (config_key,config_value,last_updated,id) values (?,?,?,default)
+2026-03-14T19:53:48.439+05:30 DEBUG 59202 --- [inventory_tracker] [  restartedMain] org.hibernate.SQL                        : insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)
+Hibernate: insert into it_app_config_history (change_timestamp,config_key,new_value,old_value,id) values (?,?,?,?,default)

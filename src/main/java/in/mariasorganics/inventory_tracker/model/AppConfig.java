@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "app_config")
+@Table(name = "it_app_config")
 public class AppConfig {
 
     @Id

@@ -27,4 +27,10 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 
     @Query("SELECT SUM(b.bagCount) FROM Batch b WHERE b.status = 'ACTIVE'")
     Long countActiveBags();
+
+    @Query("SELECT SUM(b.bagCount) FROM Batch b WHERE b.status = 'ACTIVE' AND b.targetExitDate <= :arrivalDate")
+    Long sumBagCountByStatusAndTargetExitDateBefore(java.time.LocalDate arrivalDate);
+
+    @Query("SELECT SUM(b.bagCount) FROM Batch b WHERE b.status = 'ACTIVE' AND b.targetExitDate BETWEEN :startDate AND :endDate")
+    Long sumBagCountByStatusAndTargetExitDateBetween(java.time.LocalDate startDate, java.time.LocalDate endDate);
 }
