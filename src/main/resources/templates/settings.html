@@ -53,13 +53,33 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="SPAWN_G_PER_BAG" class="form-label fw-bold">Spawn (g) per Bag</label>
+                                    <label for="SPAWN_USAGE_PER_BAG_G" class="form-label fw-bold">Spawn Usage per Bag (g)</label>
                                     <div class="input-group">
-                                        <input type="number" step="0.1" class="form-control" id="SPAWN_G_PER_BAG" name="SPAWN_G_PER_BAG" 
-                                               th:value="${configs['SPAWN_G_PER_BAG']}" required>
-                                        <span class="input-group-text">g</span>
+                                        <input type="number" step="0.1" class="form-control" id="SPAWN_USAGE_PER_BAG_G" name="SPAWN_USAGE_PER_BAG_G" 
+                                               th:value="${configs['SPAWN_USAGE_PER_BAG_G']}" required>
+                                        <span class="input-group-text">grams</span>
                                     </div>
-                                    <div class="form-text">Default: 150.0 g</div>
+                                    <div class="form-text">Grams of spawn needed per produced bag. Default: 150.0 g</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="DAILY_PRODUCTION_TARGET" class="form-label fw-bold">Daily Production Target</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="DAILY_PRODUCTION_TARGET" name="DAILY_PRODUCTION_TARGET" 
+                                               th:value="${configs['DAILY_PRODUCTION_TARGET']}" required>
+                                        <span class="input-group-text">bags/day</span>
+                                    </div>
+                                    <div class="form-text">Planned daily output. Default: 18.0</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="LOW_STOCK_THRESHOLD_DAYS" class="form-label fw-bold">Low Stock Alert Buffer</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="LOW_STOCK_THRESHOLD_DAYS" name="LOW_STOCK_THRESHOLD_DAYS" 
+                                               th:value="${configs['LOW_STOCK_THRESHOLD_DAYS']}" required>
+                                        <span class="input-group-text">days</span>
+                                    </div>
+                                    <div class="form-text">Generate alert if stock lasts less than this. Default: 5.0</div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -69,7 +89,7 @@
                                                th:value="${configs['DARK_ROOM_CAPACITY']}" required>
                                         <span class="input-group-text">bags</span>
                                     </div>
-                                    <div class="form-text">Maximum bag storage capacity.</div>
+                                    <div class="form-text">Maximum bag storage capacity. Default: 900.0</div>
                                 </div>
 
                                 <div class="col-md-6">

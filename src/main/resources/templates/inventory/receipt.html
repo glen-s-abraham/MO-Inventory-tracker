@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Log Stock Receipt</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/inventory/receipt}" method="post">
+                            <div class="mb-3">
+                                <label for="itemName" class="form-label">Item Type</label>
+                                <select class="form-select" id="itemName" name="itemName" required>
+                                    <option value="PELLETS">Pellets (Substrate)</option>
+                                    <option value="SPAWN">Spawn (Seed)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                <input type="number" step="0.1" class="form-control" id="quantity" name="quantity" required min="0.1">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="unit" class="form-label">Unit of Entry</label>
+                                <select class="form-select" id="unit" name="unit">
+                                    <option value="kg">Kilograms (kg)</option>
+                                    <option value="g">Grams (g)</option>
+                                </select>
+                                <div class="form-text">
+                                    Note: Pellets are in KG, Spawn is in Grams.
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-1"></i>Save Receipt
+                                </button>
+                                <a th:href="@{/inventory}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

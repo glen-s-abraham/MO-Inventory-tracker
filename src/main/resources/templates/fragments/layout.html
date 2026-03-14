@@ -39,6 +39,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activePage == 'inventory' ? 'active' : ''}" th:href="@{/inventory}">
+                        <i class="bi bi-warehouse me-1"></i>Inventory
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:classappend="${activePage == 'settings' ? 'active' : ''}" th:href="@{/settings}">
                         <i class="bi bi-gear me-1"></i>Settings
                     </a>

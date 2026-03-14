@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="container mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-warehouse me-2"></i>Inventory Dashboard</h1>
+            <div>
+                <a th:href="@{/inventory/receipt}" class="btn btn-primary me-2">
+                    <i class="bi bi-plus-circle me-1"></i>Log Receipt
+                </a>
+                <a th:href="@{/inventory/adjustment}" class="btn btn-warning">
+                    <i class="bi bi-pencil-square me-1"></i>Manual Adjustment
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <div th:each="stock : ${stocks}" class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-0" 
+                     th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'border-start border-danger border-5' : ''">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase fw-bold text-muted" th:text="${stock.itemName}">ITEM NAME</h5>
+                        <div class="row mt-3">
+                            <div class="col-6 text-center border-end">
+                                <h3 class="mb-0 fw-bold" th:text="${#numbers.formatDecimal(stock.physicalQuantity, 1, 1)}">0.0</h3>
+                                <small class="text-muted">Physical (<span th:text="${stock.unitOfMeasure}"></span>)</small>
+                            </div>
+                            <div class="col-6 text-center">
+                                <h3 class="mb-0 fw-bold text-info" th:text="${#numbers.formatDecimal(stock.reservedQuantity, 1, 1)}">0.0</h3>
+                                <small class="text-muted">Reserved (<span th:text="${stock.unitOfMeasure}"></span>)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 rounded" 
+                             th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'bg-danger-subtle' : 'bg-light'">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Available Stock:</span>
+                                <span class="fw-bold" 
+                                      th:classappend="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)} ? 'text-danger' : 'text-success'"
+                                      th:text="${#numbers.formatDecimal(stock.getAvailableQuantity(), 1, 1)} + ' ' + ${stock.unitOfMeasure}">
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <small>5-Day Req:</small>
+                                <small class="fw-bold" th:text="${#numbers.formatDecimal(requirements.get(stock.itemName), 1, 1)} + ' ' + ${stock.unitOfMeasure}"></small>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${stock.physicalQuantity < (requirements.get(stock.itemName) ?: 0.0)}" class="mt-2">
+                            <span class="badge bg-danger">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>Low Stock Alert
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(stocks)}" class="col-12 text-center py-5">
+                <i class="bi bi-inbox text-muted display-1"></i>
+                <p class="mt-3 text-muted">No stock data available. Start by logging a receipt.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
