@@ -31,7 +31,7 @@ jobs:
       - name: Copy Jar to Deployment Folder
         run: |
           sudo mkdir -p /opt/inventory-tracker
-          sudo cp target/MO-Inventory-tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
+          sudo cp target/inventory_tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
 
       - name: Restart Service
         run: |
