@@ -54,8 +54,8 @@ public class BatchController {
         Map<String, Double> configMap = configService.getConfigMap();
         model.addAttribute("capacity", configMap.getOrDefault("DARK_ROOM_CAPACITY", 900.0));
         
-        // Also need all batches for the "Total Batches" badge if still used, 
-        // but maybe better to just use total elements from pages
+        // Total active bags for occupancy summary
+        model.addAttribute("totalActiveBags", batchService.getTotalActiveBags());
         model.addAttribute("totalBatches", activeBatches.getTotalElements() + completedBatches.getTotalElements());
         
         return "production/index";

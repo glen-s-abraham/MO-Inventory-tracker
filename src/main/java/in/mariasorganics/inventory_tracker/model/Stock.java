@@ -22,6 +22,9 @@ public class Stock {
     @Column(name = "unit_of_measure", nullable = false)
     private String unitOfMeasure;
 
+    @Version
+    private Long version;
+
     public Stock() {}
 
     public Stock(String itemName, String unitOfMeasure) {

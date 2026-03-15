@@ -38,6 +38,9 @@ public class Batch {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    @Version
+    private Long version;
+
     public Batch() {
         this.createdAt = LocalDateTime.now();
     }

@@ -9,7 +9,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/settings")
 public class ConfigController {
 
     private final ConfigService configService;
@@ -18,7 +17,12 @@ public class ConfigController {
         this.configService = configService;
     }
 
-    @GetMapping
+    @GetMapping("/config")
+    public String configRedirect() {
+        return "redirect:/settings";
+    }
+
+    @GetMapping("/settings")
     public String settings(Model model) {
         model.addAttribute("configs", configService.getConfigMap());
         model.addAttribute("pageTitle", "Global Configuration");
@@ -26,7 +30,7 @@ public class ConfigController {
         return "settings";
     }
 
-    @PostMapping("/update")
+    @PostMapping("/settings/update")
     public String updateConfigs(@RequestParam Map<String, String> allParams, RedirectAttributes redirectAttributes) {
         try {
             for (Map.Entry<String, String> entry : allParams.entrySet()) {

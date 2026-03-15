@@ -67,17 +67,13 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span>Current Occupancy:</span>
-                        <th:block th:with="totalActive=${#aggregates.sum(activeBatches.![bagCount]) ?: 0}">
-                            <span class="badge bg-info text-dark" th:text="${totalActive} + ' / ' + ${#numbers.formatDecimal(capacity, 1, 0)}">0 / 900</span>
-                        </th:block>
+                        <span class="badge bg-info text-dark" th:text="${totalActiveBags} + ' / ' + ${#numbers.formatDecimal(capacity, 1, 0)}">0 / 900</span>
                     </div>
                     <div class="progress" style="height: 15px;">
-                        <th:block th:with="totalActive=${#aggregates.sum(activeBatches.![bagCount]) ?: 0}">
-                            <div class="progress-bar" role="progressbar" 
-                                 th:style="'width: ' + (${totalActive} / ${capacity} * 100) + '%'"
-                                 th:aria-valuenow="${totalActive}" aria-valuemin="0" th:aria-valuemax="${capacity}"
-                                 th:classappend="${totalActive / capacity > 0.8} ? 'bg-danger' : 'bg-success'"></div>
-                        </th:block>
+                        <div class="progress-bar" role="progressbar" 
+                             th:style="'width: ' + (${totalActiveBags} / ${capacity} * 100) + '%'"
+                             th:aria-valuenow="${totalActiveBags}" aria-valuemin="0" th:aria-valuemax="${capacity}"
+                             th:classappend="${totalActiveBags / capacity > 0.8} ? 'bg-danger' : 'bg-success'"></div>
                     </div>
                 </div>
             </div>

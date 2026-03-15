@@ -20,6 +20,9 @@ public class AppConfig {
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 
+    @Version
+    private Long version;
+
     public AppConfig() {}
 
     public AppConfig(String configKey, Double configValue) {

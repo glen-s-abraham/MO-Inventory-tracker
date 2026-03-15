@@ -16,9 +16,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class BatchService {
+
+    private static final Logger log = LoggerFactory.getLogger(BatchService.class);
 
     private final BatchRepository batchRepository;
     private final StockRepository stockRepository;
@@ -84,6 +88,11 @@ public class BatchService {
         return batchRepository.save(batch);
     }
 
+    public Long getTotalActiveBags() {
+        Long count = batchRepository.countActiveBags();
+        return count == null ? 0L : count;
+    }
+
     @Transactional
     public void checkoutBags(int totalToCheckout) {
         Long activeBags = batchRepository.countActiveBags();
@@ -132,14 +141,17 @@ public class BatchService {
 
     @Transactional
     public void deleteBatch(Long id) {
+        log.info("Attempting to delete batch with ID: {}", id);
         Batch batch = batchRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Batch not found: " + id));
         
         if (batch.getStatus() == Batch.BatchStatus.COMPLETED) {
-            throw new IllegalStateException("Completed batches cannot be deleted for historical integrity. Use 'Undo' to move back to active room if needed.");
+            log.warn("Attempted to delete a completed batch: {}", id);
+            throw new IllegalStateException("Completed batches cannot be deleted for historical integrity.");
         }
 
         if (batch.getStatus() == Batch.BatchStatus.ACTIVE) {
+            log.info("Restoring stock for active batch {} ({} bags)", batch.getBatchId(), batch.getBagCount());
             Map<String, Double> configs = configService.getConfigMap();
             double pelletPerBag = configs.getOrDefault("PELLET_KG_PER_BAG", 1.0);
             double spawnUsagePerBag = configs.getOrDefault("SPAWN_USAGE_PER_BAG_G", 150.0);
@@ -149,6 +161,7 @@ public class BatchService {
         }
         
         batchRepository.delete(batch);
+        log.info("Batch deleted successfully: {}", id);
     }
 
     @Transactional
@@ -238,7 +251,7 @@ public class BatchService {
 
     private String generateBatchId(LocalDate date) {
         String datePart = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        long countSuffix = batchRepository.count() + 1;
-        return "B-" + datePart + "-" + String.format("%03d", countSuffix);
+        String suffix = String.format("%04d", (int)(Math.random() * 10000));
+        return "B-" + datePart + "-" + suffix;
     }
 }
