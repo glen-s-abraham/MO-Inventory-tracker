@@ -1,39 +1,37 @@
-name: Deploy Inventory Tracker
+name: Build and Deploy Inventory Tracker
 
 on:
+  workflow_dispatch: 
   push:
-    branches:
-      - main # Change this if your default branch is 'master'
-  workflow_dispatch: # Enables the manual "Run workflow" button in GitHub UI
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted # Tells GitHub to use your local server
+    runs-on: self-hosted
 
     steps:
+      - name: Environment Check
+        run: |
+          whoami
+          java -version
+          mvn -version
+          
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21' # Adjust if your project uses Java 21 or another version
-          distribution: 'temurin'
-          cache: 'maven'
-
       - name: Build with Maven (Prod Profile)
-        # Packages the app with the prod profile and skips tests to speed up deployment
+        # Uses the Maven installation already on your server
         run: mvn clean package -Pprod -DskipTests
 
-      - name: Deploy and Restart Service
+      - name: Copy Jar to Deployment Folder
         run: |
-          # Ensure directories exist and permissions are correct
-          sudo mkdir -p /opt/inventory-tracker/logs
-          sudo chown -R glen:glen /opt/inventory-tracker
+          sudo mkdir -p /opt/inventory-tracker
+          sudo cp target/MO-Inventory-tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
 
-          # Copy the newly built JAR to the deployment directory
-          # Note: Ensure the JAR name matches what is generated in your target/ folder
-          cp target/MO-Inventory-tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
-
-          # Restart the systemd service
+      - name: Restart Service
+        run: |
           sudo systemctl restart inventory-tracker.service
+          
+      - name: Check Status
+        run: |
+          systemctl status inventory-tracker.service --no-pager
