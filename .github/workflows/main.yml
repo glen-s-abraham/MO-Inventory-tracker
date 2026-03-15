@@ -1,0 +1,42 @@
+name: Build and Deploy Inventory Tracker
+
+on:
+  workflow_dispatch: 
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:         
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # --- NEW STEP ADDED HERE ---
+      - name: Set Profile to Prod in Properties
+        run: |
+          # Searches for the active profile line and replaces it with 'prod'
+          sed -i 's/^spring.profiles.active=.*/spring.profiles.active=prod/' src/main/resources/application.properties
+          
+          # Prints the updated line to your GitHub Action logs so you can verify it worked
+          cat src/main/resources/application.properties | grep spring.profiles.active
+      # ---------------------------
+
+      - name: Build with Maven
+        # Uses the Maven installation already on your server.
+        # -Pprod has been removed to prevent build failures.
+        run: mvn clean package -DskipTests
+
+      - name: Copy Jar to Deployment Folder
+        run: |
+          sudo mkdir -p /opt/inventory-tracker
+          sudo cp target/inventory_tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
+
+      - name: Restart Service
+        run: |
+          sudo systemctl restart inventory-tracker.service
+          
+      - name: Check Status
+        run: |
+          systemctl status inventory-tracker.service --no-pager
