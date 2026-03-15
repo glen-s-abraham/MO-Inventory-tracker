@@ -9,13 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: self-hosted
 
-    steps:
-      - name: Environment Check
-        run: |
-          whoami
-          java -version
-          mvn -version
-          
+    steps:         
       - name: Checkout Code
         uses: actions/checkout@v4
 
