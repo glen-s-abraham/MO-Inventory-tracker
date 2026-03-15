@@ -85,12 +85,15 @@ public class InventoryService {
         );
     }
 
-    public Map<String, Object> getDashboardProjections() {
+    public Map<String, Object> getDashboardProjections(Integer customExitWindow) {
         Map<String, Double> configs = configService.getConfigMap();
         double dailyTarget = configs.getOrDefault("DAILY_PRODUCTION_TARGET", 18.0);
         double pelletPerBag = configs.getOrDefault("PELLET_KG_PER_BAG", 1.0);
         double spawnPerBag = configs.getOrDefault("SPAWN_USAGE_PER_BAG_G", 150.0);
         double leadTime = configs.getOrDefault("SUPPLIER_LEAD_TIME_DAYS", 15.0);
+        
+        // Use custom window for UI display if provided, otherwise default to leadTime
+        double dashboardWindow = (customExitWindow != null) ? customExitWindow.doubleValue() : leadTime;
         double capacity = configs.getOrDefault("DARK_ROOM_CAPACITY", 900.0);
         double inoculationsPerWeek = configs.getOrDefault("INOCULATIONS_PER_WEEK", 1.0);
 
@@ -103,9 +106,11 @@ public class InventoryService {
         double freeSlotsNow = Math.max(0, capacity - activeBags);
         
         // Exits in different windows for UI and logic
-        Long exitsLeadTime = batchRepository.sumBagCountByStatusAndTargetExitDateBetween(LocalDate.now(), LocalDate.now().plusDays((long)leadTime));
-        if (exitsLeadTime == null) exitsLeadTime = 0L;
-        Long exitsNextCycle = exitsLeadTime; // Already calculated for the dashboard window
+        Long exitsDashboard = batchRepository.sumBagCountByStatusAndTargetExitDateBetween(LocalDate.now(), LocalDate.now().plusDays((long)dashboardWindow));
+        if (exitsDashboard == null) exitsDashboard = 0L;
+        
+        Long exitsNextCycle = batchRepository.sumBagCountByStatusAndTargetExitDateBetween(LocalDate.now(), LocalDate.now().plusDays((long)leadTime));
+        if (exitsNextCycle == null) exitsNextCycle = 0L;
 
         // 2. Optimal Rate Calculation (Space + Stock)
         // Space Throuput Rate = (Free Slots Now + Exits in LeadTime) / leadTime
@@ -124,8 +129,9 @@ public class InventoryService {
         projections.put("freeSlotsNow", (int) freeSlotsNow);
         projections.put("capacity", (int) capacity);
         projections.put("activeBags", activeBags.intValue());
-        projections.put("exitsLeadTime", exitsLeadTime);
+        projections.put("exitsLeadTime", exitsDashboard);
         projections.put("leadTime", (int) leadTime);
+        projections.put("dashboardWindow", (int) dashboardWindow);
         projections.put("isCritical", standardRes.runwayDays <= leadTime);
         projections.put("occupancyPercentage", (int) (activeBags * 100.0 / capacity));
         projections.put("spacePauseDetected", standardRes.spacePauseDetected);

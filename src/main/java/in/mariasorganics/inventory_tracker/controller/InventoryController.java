@@ -17,12 +17,13 @@ public class InventoryController {
     }
 
     @GetMapping
-    public String dashboard(Model model) {
+    public String dashboard(@RequestParam(required = false) Integer exitWindow, Model model) {
         model.addAttribute("stocks", inventoryService.getAllStock());
         model.addAttribute("requirements", inventoryService.getStockRequirements());
-        model.addAttribute("projections", inventoryService.getDashboardProjections());
+        model.addAttribute("projections", inventoryService.getDashboardProjections(exitWindow));
         model.addAttribute("pageTitle", "Inventory Dashboard");
         model.addAttribute("activePage", "inventory");
+        model.addAttribute("currentExitWindow", exitWindow);
         return "inventory/dashboard";
     }
 
