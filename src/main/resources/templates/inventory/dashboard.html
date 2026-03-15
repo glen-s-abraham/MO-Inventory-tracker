@@ -88,8 +88,8 @@
                                 <div class="text-muted small fw-semibold">Free Slots Now</div>
                             </div>
                             <div class="col-md-4 border-end">
-                                <div class="h3 fw-bold mb-0 text-info" th:text="'+' + ${projections.exits7Days}">+0</div>
-                                <div class="text-muted small fw-semibold">Exits (Next 7 Days)</div>
+                                <div class="h3 fw-bold mb-0 text-info" th:text="'+' + ${projections.exitsLeadTime}">+0</div>
+                                <div class="text-muted small fw-semibold" th:text="'Exits (Next ' + ${projections.leadTime} + ' Days)'">Exits (Next 7 Days)</div>
                             </div>
                             <div class="col-md-4">
                                 <div class="h3 fw-bold mb-0 text-primary" th:text="${#numbers.formatDecimal(projections.occupancyPercentage, 1, 2)} + '%'">0.00%</div>

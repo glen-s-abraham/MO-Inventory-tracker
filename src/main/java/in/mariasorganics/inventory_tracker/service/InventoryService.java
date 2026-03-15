@@ -103,10 +103,9 @@ public class InventoryService {
         double freeSlotsNow = Math.max(0, capacity - activeBags);
         
         // Exits in different windows for UI and logic
-        Long exits7Days = batchRepository.sumBagCountByStatusAndTargetExitDateBetween(LocalDate.now(), LocalDate.now().plusDays(7));
-        Long exitsNextCycle = batchRepository.sumBagCountByStatusAndTargetExitDateBetween(LocalDate.now(), LocalDate.now().plusDays((long)leadTime));
-        if (exits7Days == null) exits7Days = 0L;
-        if (exitsNextCycle == null) exitsNextCycle = 0L;
+        Long exitsLeadTime = batchRepository.sumBagCountByStatusAndTargetExitDateBetween(LocalDate.now(), LocalDate.now().plusDays((long)leadTime));
+        if (exitsLeadTime == null) exitsLeadTime = 0L;
+        Long exitsNextCycle = exitsLeadTime; // Already calculated for the dashboard window
 
         // 2. Optimal Rate Calculation (Space + Stock)
         // Space Throuput Rate = (Free Slots Now + Exits in LeadTime) / leadTime
@@ -125,7 +124,8 @@ public class InventoryService {
         projections.put("freeSlotsNow", (int) freeSlotsNow);
         projections.put("capacity", (int) capacity);
         projections.put("activeBags", activeBags.intValue());
-        projections.put("exits7Days", exits7Days);
+        projections.put("exitsLeadTime", exitsLeadTime);
+        projections.put("leadTime", (int) leadTime);
         projections.put("isCritical", standardRes.runwayDays <= leadTime);
         projections.put("occupancyPercentage", (int) (activeBags * 100.0 / capacity));
         projections.put("spacePauseDetected", standardRes.spacePauseDetected);
