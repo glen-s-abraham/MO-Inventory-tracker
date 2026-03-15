@@ -1,0 +1,39 @@
+name: Deploy Inventory Tracker
+
+on:
+  push:
+    branches:
+      - main # Change this if your default branch is 'master'
+  workflow_dispatch: # Enables the manual "Run workflow" button in GitHub UI
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted # Tells GitHub to use your local server
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21' # Adjust if your project uses Java 21 or another version
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven (Prod Profile)
+        # Packages the app with the prod profile and skips tests to speed up deployment
+        run: mvn clean package -Pprod -DskipTests
+
+      - name: Deploy and Restart Service
+        run: |
+          # Ensure directories exist and permissions are correct
+          sudo mkdir -p /opt/inventory-tracker/logs
+          sudo chown -R glen:glen /opt/inventory-tracker
+
+          # Copy the newly built JAR to the deployment directory
+          # Note: Ensure the JAR name matches what is generated in your target/ folder
+          cp target/MO-Inventory-tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
+
+          # Restart the systemd service
+          sudo systemctl restart inventory-tracker.service
