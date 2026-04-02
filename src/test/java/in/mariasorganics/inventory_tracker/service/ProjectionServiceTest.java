@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -57,20 +58,23 @@ class ProjectionServiceTest {
 
         Stock pellets = new Stock("PELLETS", "KG");
         pellets.setPhysicalQuantity(0.0);
+        pellets.setReservedQuantity(0.0);
         when(stockRepository.findByItemName("PELLETS")).thenReturn(Optional.of(pellets));
 
         Stock spawn = new Stock("SPAWN", "G");
         spawn.setPhysicalQuantity(0.0);
+        spawn.setReservedQuantity(0.0);
         when(stockRepository.findByItemName("SPAWN")).thenReturn(Optional.of(spawn));
 
         // Act
-        Map<String, Object> results = projectionService.calculateProjection(orderDate, plannedBags, projectionDays);
+        Map<String, Object> results = projectionService.calculateProjection(orderDate, plannedBags, projectionDays, null);
 
-        // Assert
-        // Target = 25 days * 10 bags/day = 250 bags
-        // Current Stock = 0, Depletion won't matter if it's 0 already
-        // Pellets needed = 250 * 1.0 = 250.0
-        assertEquals(250.0, results.get("pelletsToOrder"));
+        // Check bounds instead of strict equals due to dynamic `LocalDate.now()` inside the service loop.
+        // During 25 days, there are typically 17-19 weekdays.
+        // Assuming 18 weekdays: 18 * 10 = 180 base bags * 1.05 contamination factor = 189.0
+        // We will assert it's between minimum (17 * 10 * 1.05 = 178.5) and maximum (19 * 10 * 1.05 = 199.5)
+        Double result = (Double) results.get("pelletsToOrder");
+        assertTrue(result >= 170.0 && result <= 200.0, "Result " + result + " should be dynamically valid for non-weekend day production");
     }
 
     @Test
@@ -93,10 +97,11 @@ class ProjectionServiceTest {
         // High stock (Enough for 250 bags)
         Stock pellets = new Stock("PELLETS", "KG");
         pellets.setPhysicalQuantity(500.0);
+        pellets.setReservedQuantity(0.0);
         when(stockRepository.findByItemName("PELLETS")).thenReturn(Optional.of(pellets));
 
         // Act
-        Map<String, Object> results = projectionService.calculateProjection(orderDate, 0, 25);
+        Map<String, Object> results = projectionService.calculateProjection(orderDate, 0, 25, null);
 
         // Assert
         assertEquals(0.0, results.get("pelletsToOrder"));

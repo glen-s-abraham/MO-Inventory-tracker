@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Batch {
 
     public enum BatchStatus {
-        ACTIVE, COMPLETED
+        PLANNED, ACTIVE, COMPLETED
     }
 
     @Id

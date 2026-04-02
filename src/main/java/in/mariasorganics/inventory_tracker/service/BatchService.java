@@ -75,17 +75,46 @@ public class BatchService {
         double totalPelletsNeeded = bagCount * pelletPerBag;
         double totalSpawnNeeded = bagCount * spawnUsagePerBag;
 
-        deductStock("PELLETS", totalPelletsNeeded, "Batch Production: " + bagCount + " bags");
-        deductStock("SPAWN", totalSpawnNeeded, "Batch Production: " + bagCount + " bags");
-
-        // 3. Batch Generation
         double inoculationPeriod = configs.getOrDefault("INOCULATION_PERIOD_DAYS", 18.0);
         LocalDate targetExitDate = inoculationDate.plusDays((long) inoculationPeriod);
-        
-        String batchId = generateBatchId(inoculationDate);
-        
-        Batch batch = new Batch(batchId, inoculationDate, bagCount, targetExitDate);
-        return batchRepository.save(batch);
+
+        if (inoculationDate.isAfter(LocalDate.now())) {
+            // Future batch: Reserve stock instead of deducting physical
+            reserveStock("PELLETS", totalPelletsNeeded, "Batch Planned: " + bagCount + " bags");
+            reserveStock("SPAWN", totalSpawnNeeded, "Batch Planned: " + bagCount + " bags");
+            
+            Batch batch = new Batch(generateBatchId(inoculationDate), inoculationDate, bagCount, targetExitDate);
+            batch.setStatus(Batch.BatchStatus.PLANNED);
+            return batchRepository.save(batch);
+        } else {
+            // Immediate batch: Deduct physical directly
+            deductStock("PELLETS", totalPelletsNeeded, "Batch Production: " + bagCount + " bags");
+            deductStock("SPAWN", totalSpawnNeeded, "Batch Production: " + bagCount + " bags");
+            
+            Batch batch = new Batch(generateBatchId(inoculationDate), inoculationDate, bagCount, targetExitDate);
+            return batchRepository.save(batch);
+        }
+    }
+
+    @Transactional
+    public void activatePlannedBatches() {
+        List<Batch> plannedBatches = batchRepository.findByStatusOrderByInoculationDateAsc(Batch.BatchStatus.PLANNED);
+        Map<String, Double> configs = configService.getConfigMap();
+        double pelletPerBag = configs.getOrDefault("PELLET_KG_PER_BAG", 1.0);
+        double spawnUsagePerBag = configs.getOrDefault("SPAWN_USAGE_PER_BAG_G", 150.0);
+
+        for (Batch batch : plannedBatches) {
+            if (!batch.getInoculationDate().isAfter(LocalDate.now())) {
+                double totalPelletsNeeded = batch.getBagCount() * pelletPerBag;
+                double totalSpawnNeeded = batch.getBagCount() * spawnUsagePerBag;
+
+                commitReservedStock("PELLETS", totalPelletsNeeded, "Batch Activation: " + batch.getBatchId());
+                commitReservedStock("SPAWN", totalSpawnNeeded, "Batch Activation: " + batch.getBatchId());
+
+                batch.setStatus(Batch.BatchStatus.ACTIVE);
+                batchRepository.save(batch);
+            }
+        }
     }
 
     public Long getTotalActiveBags() {
@@ -231,6 +260,33 @@ public class BatchService {
             throw new IllegalStateException("Insufficient stock for " + itemName + ". Available: " + stock.getPhysicalQuantity() + ", Required: " + quantity);
         }
         
+        stock.subtractPhysical(quantity);
+        stockRepository.save(stock);
+
+        transactionRepository.save(new StockTransaction(itemName.toUpperCase(), quantity, 
+                StockTransaction.TransactionType.CONSUMPTION, reason));
+    }
+
+    private void reserveStock(String itemName, Double quantity, String reason) {
+        Stock stock = stockRepository.findByItemName(itemName.toUpperCase())
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found in inventory: " + itemName));
+        
+        // Validation: Cannot reserve more than what we physically have (minus already reserved)
+        if (stock.getAvailableQuantity() < quantity) {
+            throw new IllegalStateException("Insufficient available stock to reserve for " + itemName + ". Available for reservation: " + stock.getAvailableQuantity() + ", Required: " + quantity);
+        }
+        
+        stock.addReserved(quantity);
+        stockRepository.save(stock);
+        // Note: We might not log a standard TransactionType for pure reservations to keep physical logs clean.
+        // Or we could log it as a separate conceptual type if needed.
+    }
+
+    private void commitReservedStock(String itemName, Double quantity, String reason) {
+        Stock stock = stockRepository.findByItemName(itemName.toUpperCase())
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found in inventory: " + itemName));
+        
+        stock.subtractReserved(quantity);
         stock.subtractPhysical(quantity);
         stockRepository.save(stock);
 

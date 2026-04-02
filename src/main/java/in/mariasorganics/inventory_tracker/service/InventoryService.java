@@ -71,6 +71,8 @@ public class InventoryService {
                 StockTransaction.TransactionType.ADJUSTMENT, reason));
     }
 
+
+
     public Map<String, Double> getStockRequirements() {
         Map<String, Double> configs = configService.getConfigMap();
         double dailyTarget = configs.getOrDefault("DAILY_PRODUCTION_TARGET", 18.0);
@@ -95,7 +97,6 @@ public class InventoryService {
         // Use custom window for UI display if provided, otherwise default to leadTime
         double dashboardWindow = (customExitWindow != null) ? customExitWindow.doubleValue() : leadTime;
         double capacity = configs.getOrDefault("DARK_ROOM_CAPACITY", 900.0);
-        double inoculationsPerWeek = configs.getOrDefault("INOCULATIONS_PER_WEEK", 1.0);
 
         double availablePellets = getStockQuantity("PELLETS");
         double availableSpawn = getStockQuantity("SPAWN");
@@ -120,9 +121,11 @@ public class InventoryService {
         double optimalRate = Math.min(dailyTarget, Math.min(spaceThroughputRate, stockRate));
         optimalRate = Math.max(0, Math.floor(optimalRate));
 
+        double contaminationRate = configs.getOrDefault("EXPECTED_CONTAMINATION_RATE", 0.05);
+
         // 3. Projections (Double Constrained)
-        SimulationResult standardRes = calculateCombinedRunway(availablePellets, availableSpawn, dailyTarget, inoculationsPerWeek, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags);
-        SimulationResult optimizedRes = calculateCombinedRunway(availablePellets, availableSpawn, optimalRate, inoculationsPerWeek, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags);
+        SimulationResult standardRes = calculateCombinedRunway(availablePellets, availableSpawn, dailyTarget, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags, contaminationRate);
+        SimulationResult optimizedRes = calculateCombinedRunway(availablePellets, availableSpawn, optimalRate, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags, contaminationRate);
 
         Map<String, Object> projections = new HashMap<>();
         projections.put("optimalRate", (int) optimalRate);
@@ -151,10 +154,10 @@ public class InventoryService {
         return projections;
     }
 
-    private SimulationResult calculateCombinedRunway(double pellets, double spawn, double rate, double frequencyPerWeek, double pelletPerBag, double spawnPerBag, double capacity, double activeBags) {
-        if (rate <= 0 || frequencyPerWeek <= 0) return new SimulationResult(999, false);
+    private SimulationResult calculateCombinedRunway(double pellets, double spawn, double rate, double pelletPerBag, double spawnPerBag, double capacity, double activeBags, double contaminationRate) {
+        if (rate <= 0) return new SimulationResult(999, false);
         
-        // 1. Prepare Exit Timeline
+        // 1. Prepare Timeline Context (Exits)
         List<Batch> batches = batchRepository.findByStatusOrderByInoculationDateAsc(Batch.BatchStatus.ACTIVE);
         Map<LocalDate, Long> exitsTimeline = new HashMap<>();
         for (Batch b : batches) {
@@ -183,8 +186,9 @@ public class InventoryService {
             }
 
             // B. Production Check
-            // Rule: Production only happens if we meet the weekly frequency AND have room
-            boolean isProductionDay = (days % 7) < (int)frequencyPerWeek;
+            // Rule: Production happens Mon-Fri
+            java.time.DayOfWeek dow = simDate.getDayOfWeek();
+            boolean isProductionDay = dow != java.time.DayOfWeek.SATURDAY && dow != java.time.DayOfWeek.SUNDAY;
             
             if (isProductionDay) {
                 if (currentOccupancy + rate <= capacity) {
@@ -195,6 +199,8 @@ public class InventoryService {
                     if (currentPellets >= pelletRequirement && currentSpawn >= spawnRequirement) {
                         currentPellets -= pelletRequirement;
                         currentSpawn -= spawnRequirement;
+                        // Yield loss expectation doesn't affect space immediately, but let's assume contaminated bags are removed before they exit.
+                        // For a simple capacity model, they occupy space. But to be safe, we just consider them taking full space.
                         currentOccupancy += rate;
                     } else {
                         // Stock out! End simulation.

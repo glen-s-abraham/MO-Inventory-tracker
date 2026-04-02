@@ -82,9 +82,7 @@ public class ConfigService {
             "LOW_STOCK_THRESHOLD_DAYS", 5.0,
             "INOCULATION_PERIOD_DAYS", 18.0,
             "SUPPLIER_LEAD_TIME_DAYS", 15.0,
-            "MONTHLY_WORKING_DAYS", 25.0,
-            "INOCULATION_DAYS_PER_MONTH", 5.0,
-            "INOCULATIONS_PER_WEEK", 1.0
+            "EXPECTED_CONTAMINATION_RATE", 0.05
         );
 
         defaults.forEach((key, value) -> {

@@ -35,6 +35,7 @@ public class BatchController {
                         @RequestParam(value = "completedPage", defaultValue = "0") int completedPage,
                         @RequestParam(value = "activeTab", defaultValue = "active") String activeTab) {
         
+        batchService.activatePlannedBatches();
         int pageSize = 10;
         Page<Batch> activeBatches = batchService.getActiveBatchesPaginated(activePage, pageSize);
         Page<Batch> completedBatches = batchService.getCompletedBatchesPaginated(completedPage, pageSize);

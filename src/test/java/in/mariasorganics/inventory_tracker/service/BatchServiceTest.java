@@ -162,7 +162,9 @@ class BatchServiceTest {
         when(batchRepository.findById(1L)).thenReturn(Optional.of(b));
         when(batchRepository.countActiveBags()).thenReturn(100L);
         when(stockRepository.findByItemName("PELLETS")).thenReturn(Optional.of(pellets));
-        when(stockRepository.findByItemName("SPAWN")).thenReturn(Optional.of(new Stock("SPAWN", "G")));
+        Stock spawn = new Stock("SPAWN", "G");
+        spawn.setPhysicalQuantity(2000.0);
+        when(stockRepository.findByItemName("SPAWN")).thenReturn(Optional.of(spawn));
 
         batchService.updateBatchCount(1L, 15); // +5 bags
 
