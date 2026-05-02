@@ -122,10 +122,11 @@ public class InventoryService {
         optimalRate = Math.max(0, Math.floor(optimalRate));
 
         double contaminationRate = configs.getOrDefault("EXPECTED_CONTAMINATION_RATE", 0.05);
+        double inoculationPeriodDays = configs.getOrDefault("INOCULATION_PERIOD_DAYS", 18.0);
 
         // 3. Projections (Double Constrained)
-        SimulationResult standardRes = calculateCombinedRunway(availablePellets, availableSpawn, dailyTarget, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags, contaminationRate);
-        SimulationResult optimizedRes = calculateCombinedRunway(availablePellets, availableSpawn, optimalRate, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags, contaminationRate);
+        SimulationResult standardRes = calculateCombinedRunway(availablePellets, availableSpawn, dailyTarget, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags, contaminationRate, inoculationPeriodDays);
+        SimulationResult optimizedRes = calculateCombinedRunway(availablePellets, availableSpawn, optimalRate, pelletPerBag, spawnPerBag, (double)capacity, (double)activeBags, contaminationRate, inoculationPeriodDays);
 
         Map<String, Object> projections = new HashMap<>();
         projections.put("optimalRate", (int) optimalRate);
@@ -154,7 +155,7 @@ public class InventoryService {
         return projections;
     }
 
-    private SimulationResult calculateCombinedRunway(double pellets, double spawn, double rate, double pelletPerBag, double spawnPerBag, double capacity, double activeBags, double contaminationRate) {
+    private SimulationResult calculateCombinedRunway(double pellets, double spawn, double rate, double pelletPerBag, double spawnPerBag, double capacity, double activeBags, double contaminationRate, double inoculationPeriodDays) {
         if (rate <= 0) return new SimulationResult(999, false);
         
         // 1. Prepare Timeline Context (Exits)
@@ -202,6 +203,10 @@ public class InventoryService {
                         // Yield loss expectation doesn't affect space immediately, but let's assume contaminated bags are removed before they exit.
                         // For a simple capacity model, they occupy space. But to be safe, we just consider them taking full space.
                         currentOccupancy += rate;
+                        
+                        // Schedule exit for these newly produced bags
+                        LocalDate exitDate = simDate.plusDays((long) inoculationPeriodDays);
+                        exitsTimeline.put(exitDate, exitsTimeline.getOrDefault(exitDate, 0L) + (long) rate);
                     } else {
                         // Stock out! End simulation.
                         return new SimulationResult(days - 1, pauseDetected);
